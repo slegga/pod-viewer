@@ -166,7 +166,7 @@ __DATA__
   % for my $pm (@$packages) {
   <tr>
     <td>
-    %= link_to $pm, "/perldoc/$pm";
+    %= link_to $pm, '/'.config->{hypnotoad}->{service_path}."/perldoc/$pm";
     </td>
   </tr>
   % }
