@@ -28,10 +28,8 @@ pop @x; #remove reponame
 my $main = Mojo::File->new(@x);
 say "m $main";
 for my $pm($main->list_tree->each) {
-    say "x $pm";
     next if "$pm" !~/lib/;
     next if $pm->basename !~ /\.pm$/;
-    say "$pm";
     my $fh =$pm->open('<');
     while (my $line = <$fh> ) {
 
