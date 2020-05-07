@@ -45,6 +45,7 @@ say join(',', @packages);
 sub startup {
 	my $self = shift;
 	my $config =  $self->config;
+	$self->mode('development');
     $self->config(Model::GetCommonConfig->new->get_mojoapp_config($0));
 
     $self->plugin(PODViewer => {

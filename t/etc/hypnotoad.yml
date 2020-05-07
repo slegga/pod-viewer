@@ -1,0 +1,8 @@
+---
+common_config:
+    proxy: 1
+    workers: 1
+web_services:
+    web-pod-viewer:
+        port: 42
+        security_level: private
