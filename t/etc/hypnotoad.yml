@@ -6,3 +6,4 @@ web_services:
     web-pod-viewer:
         port: 42
         security_level: private
+        service_path: podviewer

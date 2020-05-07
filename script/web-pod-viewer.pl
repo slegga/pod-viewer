@@ -47,13 +47,14 @@ sub startup {
 	my $config =  $self->config;
 	$self->mode('development');
     $self->config(Model::GetCommonConfig->new->get_mojoapp_config($0));
+    my $r = $self->routes->under($self->config->{hypnotoad}->{service_path});
 
     $self->plugin(PODViewer => {
         default_module => 'Test::ScriptX',
         allow_modules => \@packages, #[qw( Yancy Mojolicious::Plugin::Yancy Test::ScriptX )]
         layout => 'default',
+        route =>$r->any('/perldoc')
     });
-    my $r = $self->routes;
     $r->get('/' => sub {my $c = shift;$c->stash(packages=>\@packages); $c->render('list')});
 }
 1;
