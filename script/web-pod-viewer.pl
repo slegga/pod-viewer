@@ -1,4 +1,4 @@
-package Cat;
+package PODViewer;
 
 use Mojo::File 'path';
 use Mojo::Base 'Mojolicious';
@@ -18,6 +18,20 @@ BEGIN {
 use lib $lib;
 use SH::UseLib;
 use Model::GetCommonConfig;
+
+=head1 NAME
+
+web-pod-viewer;
+
+=head1 DESCRIPTION
+
+Mojolicious app that servers perldocs from parrent tree.
+
+=head2 Testing
+
+COMMON_CONFIG_DIR=t/etc morbo script/web-pod-viewer.pl
+
+=cut
 
 my @packages;
 my $curfile = Mojo::File->curfile;
@@ -40,7 +54,7 @@ for my $pm($main->list_tree->each) {
 }
 
 # search for all packages
-say join(',', @packages);
+#say join(',', @packages);
 
 sub startup {
 	my $self = shift;
@@ -69,7 +83,7 @@ use lib 'lib';
 use Mojolicious::Commands;
 
 # Start command line interface for application
-Mojolicious::Commands->start_app('Cat');
+Mojolicious::Commands->start_app('PODViewer');
 
 
 __DATA__
@@ -79,9 +93,9 @@ __DATA__
     <head>
         <link rel="stylesheet" href="/yancy/bootstrap.css">
         <style>
-            h1 { font-size: 2.00rem }
-            h2 { font-size: 1.75rem }
-            h3 { font-size: 1.50rem }
+            h1 { font-size: 1.65rem }
+            h2 { font-size: 1.45rem }
+            h3 { font-size: 1.25rem }
             h1, h2, h3 {
                 position: relative;
             }
