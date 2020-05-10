@@ -41,17 +41,6 @@ pop @x; #remove bin
 pop @x; #remove reponame
 my $main = Mojo::File->new(@x);
 say "m $main";
-for my $pm($main->list_tree->each) {
-    next if "$pm" !~/lib/;
-    next if $pm->basename !~ /\.pm$/;
-    my $fh =$pm->open('<');
-    while (my $line = <$fh> ) {
-
-        if ($line =~ /^package\s+([\w\:]+)/) {
-            push @packages, $1;
-        }
-    }
-}
 
 # search for all packages
 #say join(',', @packages);
@@ -70,6 +59,19 @@ sub startup {
         route =>$r->any('/perldoc')
     });
     $r->get('/' => sub {my $c = shift;$c->stash(packages=>\@packages); $c->render('list')});
+    Mojo::IOLoop->timer(0 => sub {
+        for my $pm($main->list_tree->each) {
+            next if "$pm" !~/lib/;
+            next if $pm->basename !~ /\.pm$/;
+            my $fh =$pm->open('<');
+            while (my $line = <$fh> ) {
+
+                if ($line =~ /^package\s+([\w\:]+)/) {
+                    push @packages, $1;
+                }
+            }
+        }
+    });
 }
 1;
 
