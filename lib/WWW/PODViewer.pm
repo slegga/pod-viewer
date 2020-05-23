@@ -174,7 +174,8 @@ __DATA__
   % for my $pm (@$packages) {
   <tr>
     <td>
-    %= link_to $pm, '/'.config->{hypnotoad}->{service_path}."/perldoc/$pm";
+    %= link_to $pm, url_for((config->{hypnotoad}->{service_path} ? '/'.config->{hypnotoad}->{service_path}:'')."/perldoc/$pm")->to_abs->to_string;
+    <a 
     </td>
   </tr>
   % }
@@ -199,6 +200,15 @@ function myFunction() {
     }
   }
 }
+
+// when the page is closed have the browser send a POST
+// to /exit to tell Mojolicious to shut down
+window.addEventListener(
+    "unload",
+    () => navigator.sendBeacon("/exit"),
+    false
+);
+
 </script>
 
 </body>
