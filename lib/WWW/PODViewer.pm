@@ -1,8 +1,9 @@
 package WWW::PODViewer;
 
-use Mojo::File 'path';
+use Data::Dumper;
 use Mojo::Base 'Mojolicious';
-
+use Mojo::File 'path';
+use lib 'lib';
 my $lib;
 BEGIN {
     my $gitdir = Mojo::File->curfile;
@@ -33,13 +34,13 @@ COMMON_CONFIG_DIR=t/etc morbo script/web-pod-viewer.pl
 
 =cut
 
-my @packages;
+my %packages;
 my $curfile = Mojo::File->curfile;
 my @x = @$curfile;
 1 while ('lib' ne pop @x);
 pop @x; #remove reponame
 my $main = Mojo::File->new(@x);
-say "m $main";
+my @ps;
 
 # search for all packages
 #say join(',', @packages);
@@ -56,11 +57,11 @@ sub startup {
     push @{$self->static->classes}, __PACKAGE__;
     $self->plugin(PODViewer => {
         default_module => 'Test::ScriptX',
-        allow_modules => \@packages, #[qw( Yancy Mojolicious::Plugin::Yancy Test::ScriptX )]
+        allow_modules => \@ps,
         layout => 'default',
         route =>$r->any('/perldoc')
     });
-    $r->get('/' => sub {my $c = shift;$c->stash(packages=>\@packages); $c->render('list')});
+    $r->get('/' => sub {my $c = shift;$c->stash(packages=>\%packages); $c->render('list')});
     Mojo::IOLoop->timer(0 => sub {
         for my $pm($main->list_tree->each) {
             next if "$pm" !~/lib/;
@@ -69,8 +70,29 @@ sub startup {
             while (my $line = <$fh> ) {
 
                 if ($line =~ /^package\s+([\w\:]+)/) {
-                    push @packages, $1;
+                    $packages{$1}++;
                 }
+                elsif ($line =~ /^use\s+([\w\:]+)/) {
+                $packages{$1}++;
+                }
+            }
+        }
+        @ps = keys %packages; # register local Packages
+        for my $i(reverse 0..$#ps) {
+            my $keep = 0;
+            my @dirs = split(/\:\:/, $ps[$i]);
+            for my $dir($main->list({dir => 1})->each ) {
+                my $name = $dir->child('lib',@dirs)->to_string.'.pm';
+                if( -e $name) {
+                    say STDERR "Keep $ps[$i] $name";
+                    $keep = 1;
+                } else {
+                    say STDERR $name;
+                }
+            }
+            if ($keep == 0) {
+                say STDERR "Deleting lin $ps[$i]";
+                delete $ps[$i];
             }
         }
     });
@@ -171,11 +193,10 @@ __DATA__
   <tr class="header">
     <th style="width:60%;">Name</th>
   </tr>
-  % for my $pm (@$packages) {
+  % for my $pm (sort{$packages->{$b}<=>$packages->{$a}} keys %$packages) {
   <tr>
     <td>
     %= link_to $pm, url_for((config->{hypnotoad}->{service_path} ? '/'.config->{hypnotoad}->{service_path}:'')."/perldoc/$pm")->to_abs->to_string;
-    <a 
     </td>
   </tr>
   % }
@@ -203,11 +224,11 @@ function myFunction() {
 
 // when the page is closed have the browser send a POST
 // to /exit to tell Mojolicious to shut down
-window.addEventListener(
-    "unload",
-    () => navigator.sendBeacon("/exit"),
-    false
-);
+// window.addEventListener(
+//    "unload",
+//    () => navigator.sendBeacon("/exit"),
+//    false
+// );
 
 </script>
 
