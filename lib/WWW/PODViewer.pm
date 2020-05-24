@@ -84,14 +84,10 @@ sub startup {
             for my $dir($main->list({dir => 1})->each ) {
                 my $name = $dir->child('lib',@dirs)->to_string.'.pm';
                 if( -e $name) {
-                    say STDERR "Keep $ps[$i] $name";
                     $keep = 1;
-                } else {
-                    say STDERR $name;
                 }
             }
             if ($keep == 0) {
-                say STDERR "Deleting lin $ps[$i]";
                 delete $ps[$i];
             }
         }
