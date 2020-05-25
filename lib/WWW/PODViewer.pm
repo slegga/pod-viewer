@@ -64,16 +64,15 @@ sub startup {
     $r->get('/' => sub {my $c = shift;$c->stash(packages=>\%packages); $c->render('list')});
     Mojo::IOLoop->timer(0 => sub {
         for my $pm($main->list_tree->each) {
-            next if "$pm" !~/lib/;
+            next if "$pm" !~/(bin|lib|script)/;
             next if $pm->basename !~ /\.pm$/;
             my $fh =$pm->open('<');
             while (my $line = <$fh> ) {
 
-                if ($line =~ /^package\s+([\w\:]+)/) {
+                if ($line =~ /^(?:package|use|require)\s+([\w\:]+)/) {
+                    next if grep  {$1 eq $_} ('lib','v5','strict','warnings','open');
+                    last if $line  eq '__DATA__' || $line  eq '__END__';
                     $packages{$1}++;
-                }
-                elsif ($line =~ /^use\s+([\w\:]+)/) {
-                $packages{$1}++;
                 }
             }
         }
