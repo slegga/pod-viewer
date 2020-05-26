@@ -1,7 +1,8 @@
 #!/usr/bin/env perl
-
-use experimental 'signatures';
+use strict;
+use warnings;
 use Mojo::File 'path';
+use feature 'signatures';
 use Net::EmptyPort qw( empty_port );
 my $lib;
 BEGIN {
@@ -28,8 +29,8 @@ my $app = WWW::PODViewer->new;
 $app->routes->any('/exit'=> sub { }); #exit not
 
 $app->hook(before_server_start => sub ($server, @) {
-    $server->silent(1);
-});
+# sometimes does not work   $server->silent(1);
+ });
 
 $app->hook(before_dispatch => sub ($c, @) {
     $c->req->url->base(Mojo::URL->new($base_url.'/'));
@@ -37,7 +38,10 @@ $app->hook(before_dispatch => sub ($c, @) {
 my $loop = Mojo::IOLoop->singleton;
 $loop->timer(0 => sub($server,@) {
     # $server->silent(1);
-    require Browser::Open;
-    Browser::Open::open_browser($base_url);
+#    require Browser::Open;
+#    Browser::Open::open_browser($base_url);
+    my $out = "firefox $base_url &";
+    print $out;
+    print `$out`;
 });
 $app->start('daemon','--listen', $base_url );

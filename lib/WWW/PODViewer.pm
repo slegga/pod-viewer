@@ -61,11 +61,13 @@ sub startup {
         layout => 'default',
         route =>$r->any('/perldoc')
     });
-    $r->get('/' => sub {my $c = shift;$c->stash(packages=>\%packages); $c->render('list')});
+    $r->get('/' => sub {
+        my $c = shift;$c->stash(packages=>\%packages); $c->render('list')
+    });
     Mojo::IOLoop->timer(0 => sub {
         for my $pm($main->list_tree->each) {
             next if "$pm" !~/(bin|lib|script)/;
-            next if $pm->basename !~ /\.pm$/;
+            next if $pm->basename !~ /\.p[ml]$/ && $pm->basename =~ /\./;
             my $fh =$pm->open('<');
             while (my $line = <$fh> ) {
 
