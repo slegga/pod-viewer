@@ -26,7 +26,6 @@ use WWW::PODViewer;
 
 my $base_url = 'http://127.0.0.1:' . empty_port();
 my $app = WWW::PODViewer->new;
-$app->routes->any('/exit'=> sub { }); #exit not
 
 $app->hook(before_server_start => sub ($server, @) {
 # sometimes does not work   $server->silent(1);
