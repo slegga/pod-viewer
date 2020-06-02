@@ -193,7 +193,7 @@ __DATA__
   % for my $pm (sort{$packages->{$b}<=>$packages->{$a}} keys %$packages) {
   <tr>
     <td>
-    %= link_to $pm, url_for((config->{hypnotoad}->{service_path} ? '/'.config->{hypnotoad}->{service_path}:'')."/perldoc/$pm")->to_abs->to_string;
+    %= link_to $pm, url_for((config->{hypnotoad}->{service_path} ? '/'.config->{hypnotoad}->{service_path}:'')."/perldoc/$pm")->to_string;
     </td>
   </tr>
   % }
