@@ -50,18 +50,38 @@ sub startup {
 	my $config =  $self->config;
 	$self->mode('development');
     $self->config(Model::GetCommonConfig->new->get_mojoapp_config($0));
+    $self->secrets($config->{secrets});
     my $r = $self->routes->under($self->config->{hypnotoad}->{service_path});
     # Add another class with templates in DATA section
     push @{$self->renderer->classes}, __PACKAGE__;
     # other class with static files in DATA section
     push @{$self->static->classes}, __PACKAGE__;
+    $self->plugin('Mojolicious::Plugin::Security');
+
+    my $logged_in = $self->routes->under('/'.$self->config->{hypnotoad}->{service_path} => sub {
+        my $c = shift;
+#        say STDERR "#SECURITY CHECK";
+        if ($ENV{NO_SECURITY}) {
+#           say STDERR 'no security';
+            return 1 ;
+        }
+        return 1 if $c->user;
+        # return 1 if $c->url_for->to_abs->host eq '127.0.0.1';
+#        say STDERR 'unauthenticated';
+        return $c->unauthenticated
+    });
+
     $self->plugin(PODViewer => {
         default_module => 'Test::ScriptX',
         allow_modules => \@ps,
         layout => 'default',
-        route =>$r->any('/perldoc')
+        route =>$logged_in->any('/perldoc')
     });
-    $r->get('/' => sub {
+
+
+
+
+    $logged_in->get('/' => sub {
         my $c = shift;$c->stash(packages=>\%packages); $c->render('list')
     });
     Mojo::IOLoop->timer(0 => sub {

@@ -16,6 +16,9 @@ BEGIN {
     }
     $lib =  $gitdir->child('utilities-perl','lib')->to_string; #return utilities-perl/lib
 };
+
+$ENV{NO_SECURITY}=1;
+
 use lib $lib;
 use SH::UseLib;
 
@@ -34,13 +37,13 @@ $app->hook(before_server_start => sub ($server, @) {
 $app->hook(before_dispatch => sub ($c, @) {
     $c->req->url->base(Mojo::URL->new($base_url.'/'));
 });
-my $loop = Mojo::IOLoop->singleton;
-$loop->timer(0 => sub($server,@) {
+#my $loop = Mojo::IOLoop->singleton;
+#$loop->timer(0 => sub($server,@) {
     # $server->silent(1);
 #    require Browser::Open;
 #    Browser::Open::open_browser($base_url);
-    my $out = "firefox $base_url &";
-    print $out;
-    print `$out`;
-});
+#    my $out = "firefox $base_url &";
+#    print $out;
+#    print `$out`;
+#});
 $app->start('daemon','--listen', $base_url );
