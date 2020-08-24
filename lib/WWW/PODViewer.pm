@@ -24,13 +24,25 @@ use Model::GetCommonConfig;
 
 web-pod-viewer;
 
+=head1 SYNOPSIS
+
+    use WWW::PODViewer;
+    use Mojolicious::Commands;
+    Mojolicious::Commands->run('WWW::PODViewer');
+
 =head1 DESCRIPTION
 
-Mojolicious app that servers perldocs from parrent tree.
+Mojolicious application class that servers perldocs from parrent tree.
 
 =head2 Testing
 
-COMMON_CONFIG_DIR=t/etc morbo script/web-pod-viewer.pl
+NO_SECURITY=1 COMMON_CONFIG_DIR=t/etc morbo script/web-pod-viewer.pl
+
+=head1 METHODS
+
+=head2 startup
+
+Main procedure. Running the mojolicious app.
 
 =cut
 
